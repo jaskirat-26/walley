@@ -1,13 +1,15 @@
 const express = require('express');
 const userRegisterController = require('./controllers/registerController');
 const userLoginController = require('./controllers/loginController');
+const dashboardController = require('./controllers/dashboardController');
+
 
 const router = express.Router();
 
-router.get('/create', blogController.blog_create_get);
-router.get('/', blogController.blog_index);
-router.post('/', blogController.blog_create_post);
-router.get('/:id', blogController.blog_details);
-router.delete('/:id', blogController.blog_delete);
+ router.post('/register', userRegisterController.registerUser);
+ router.get('/login:id', userLoginController.loginUser);
+ router.get('/user:id', dashboardController.showUser);
+ router.patch('/user:id', dashboardController.updateUser);
+ router.delete('/user:id',  dashboardController.deleteUser);
 
 module.exports = router;
