@@ -6,5 +6,10 @@ dotenv.config();
 const PORT = process.env.PORT;
 
 connectToDB();
+
+exports.test = function(req,res) {
+  res.render('test');
+};
+
 app = express();
 app.set('view engine', 'ejs');

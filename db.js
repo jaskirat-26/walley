@@ -1,10 +1,8 @@
 const dotenv = require('dotenv');
 dotenv.config();
-
-const {MongoClient} = require('mongodb');
-const database = process.env.MONGODB_URL;
-console.log(database)
-const client = new MongoClient(database);
+var {mongoose} = require('mongoose');
+mongoose.connect(process.env.MONGODB_URL);
+var db = mongoose.connection;
 
 function timeout(ms) {
     return new Promise((_, reject) => setTimeout(() => reject(new Error('Database connection timed out')), ms));
@@ -12,8 +10,9 @@ function timeout(ms) {
 
 async function connectToDB() {
     try {
-        await Promise.race([client.connect(), timeout(3000)]);
-        console.log("Connected to the Database");
+        await Promise.race([db.once('open', function callback () {
+            console.log("Database Connected Successfully");
+          }), timeout(3000)]);
     } catch (error) {
         console.error("Error connecting to the database:", error);
     }
