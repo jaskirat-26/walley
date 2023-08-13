@@ -8,7 +8,16 @@ const loginUser = (req, res) => {
     }
 }
 
+const index = (req,res) => {
+    try{
+
+    }catch(err){
+        console.log(err);
+    }
+}
+
 
 module.exports = {
-    loginUser
+    loginUser,
+    index
 }

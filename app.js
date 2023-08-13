@@ -1,5 +1,7 @@
 const express = require('express');
 const path = require('node:path');
+const morgan = require('morgan');
+
 const {connectToDB} = require('./db');
 const dotenv = require('dotenv');
 
@@ -25,17 +27,20 @@ app.listen(PORT, (err)=> {
 })
 
 app.set('view engine', 'ejs');
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({extended: true}));
+app.use(morgan('dev'));
 
 app.get('/', (req, res) => {
   res.redirect('/users');
 });
 
+//user Routes
 app.use('/users', userRoutes);
 
 app.set('views', path.join(__dirname , "walley/views"));
 
 app.use((req, res) => {
+  console.log('invalid request');
   res.status(404);
   res.render('404.ejs');
 });
