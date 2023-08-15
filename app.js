@@ -1,20 +1,20 @@
+//requirements
 const express = require('express');
-const path = require('node:path');
-const {connectToDB} = require('./db');
-const dotenv = require('dotenv');
-
+const auth = require("./auth");
+const morgan = require('morgan');
+const tokenAuth = require('./auth');
+const bodyParser = require('body-parser');
 const userRoutes = require('./users/route');
 
-
-dotenv.config();
-const PORT = process.env.PORT;
-
+//db connection
+const {connectToDB} = require('./db');
 connectToDB();
 
-exports.test = function(req,res) {
-  res.render('test');
-};
 
+//start server
+const dotenv = require('dotenv');
+dotenv.config();
+const PORT = process.env.PORT;
 app = express();
 app.listen(PORT, (err)=> {
   if(err){
@@ -24,18 +24,37 @@ app.listen(PORT, (err)=> {
   }
 })
 
+//register view engine
 app.set('view engine', 'ejs');
-app.use(express.urlencoded({extended: false}));
+
+//middleware and static files
+app.use(express.static('.'));
+app.use(morgan('dev'));
+app.use((req, res, next) => {
+  res.locals.path = req.path;
+  next();
+});
+app.use(bodyParser.urlencoded({extended: true}));
+
+//token authentication
+app.post("/", auth, (req, res, next) => {
+  if (req.verified){
+    console.log('request authenticated.')
+    res.redirect('/users')
+  }
+});
+
 
 app.get('/', (req, res) => {
   res.redirect('/users');
 });
 
+//user Routes
 app.use('/users', userRoutes);
 
-app.set('views', path.join(__dirname , "walley/views"));
-
+//invalid requests
 app.use((req, res) => {
+  console.log('invalid request');
   res.status(404);
-  res.render('404.ejs');
+  res.render('walley/404.ejs', {css:'users/index'});
 });
